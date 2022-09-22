@@ -2,10 +2,9 @@ package owpk.elasticsearch;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.stereotype.Service;
-import owpk.elasticsearch.dto.ElasticsearchGeoname;
-import owpk.elasticsearch.model.GeonameSearchHint;
-import owpk.elasticsearch.repos.GeonamesESRepository;
+import owpk.elasticsearch.model.ElasticsearchGeoname;
 import owpk.elasticsearch.repos.SpringDataGeonamesESRepository;
 import owpk.jooqrepo.GeonameJooqRepository;
 
@@ -27,17 +26,13 @@ public class ElasticsearchInitializer {
         var cities = cityRepository.findAll()
                 .stream()
                 .map(x -> {
-
-                    var geoname = new ElasticsearchGeoname();
-                    geoname.setLat(x.getLat().floatValue());
-                    geoname.setLon(x.getLong().floatValue());
-                    geoname.setName(x.getName());
-
-                    var article = new GeonameSearchHint();
-                    article.setTitle(x.getCountry());
-                    article.setTags(new String[]{"city"});
-                    article.setGeoname(geoname);
+                    var article = new ElasticsearchGeoname();
+                    article.setName(x.getName());
                     article.setId(x.getId().toPlainString());
+                    article.setLocation(new GeoPoint(x.getLat().doubleValue(),
+                            x.getLong().doubleValue()));
+                    article.setLon(x.getLong().floatValue());
+                    article.setLat(x.getLat().floatValue());
                     return article;
                 }).collect(Collectors.toList());
         geonamesESRepository.saveAll(cities);

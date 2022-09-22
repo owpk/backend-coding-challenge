@@ -18,6 +18,7 @@ public class DemoApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        citySearchingService.search("", 50f, -120f, 10);
+        var r = citySearchingService.search("Ch", 49f, -122f,  8);
+        r.forEach(System.out::println);
     }
 }
